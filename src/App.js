@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AddTask from "./components/AddTask";
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 
@@ -18,7 +20,6 @@ function App() {
     },
   ]);
 
-  const [showForm, setShowForm] = useState(false);
 
   const deleteTask = (id) => {
     setTasks(tasks.filter((task) => task.id !== id));
@@ -32,28 +33,39 @@ function App() {
     );
   };
 
-  const toggleForm = () => {
-    setShowForm(!showForm);
-  };
-
   const addTask = (task) => {
     const randId = Math.floor(Math.random() * 10000) + 1;
     setTasks([...tasks, { ...task, id: randId }]);
-  }
+  };
 
   return (
-    <div className="container">
-      <Header showForm={showForm} onAdd={toggleForm} onSaveTask={addTask} />
-      {tasks.length > 0 ? (
-        <Tasks
-          tasks={tasks}
-          onDelete={deleteTask}
-          onDoubleClick={toggleReminder}
+    <Router>
+      <div className="container">
+        <Header onSaveTask={addTask} />
+        <Routes>
+        <Route
+          path="/"
+          element={
+            tasks.length > 0 ? (
+              <Tasks
+
+                tasks={tasks}
+                onDelete={deleteTask}
+                onDoubleClick={toggleReminder}
+              />
+            ) : (
+              <p>No tasks to show</p>
+            )
+          }
         />
-      ) : (
-        <p>No tasks to show</p>
-      )}
-    </div>
+        <Route
+          exact
+          path="/add"
+          element={<AddTask onSave={addTask} />}
+        />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
