@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   BrowserRouter as Router,
   Navigate,
@@ -10,8 +10,11 @@ import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import Login from "./components/Pages/Login";
 import RequireAuth from "./components/RequireAuth";
+import AuthContext from "./context/auth-context";
 
 function App() {
+  const authContext = useContext(AuthContext);
+
   const [tasks, setTasks] = useState([
     {
       id: 1,
@@ -26,23 +29,7 @@ function App() {
       reminder: false,
     },
   ]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const onLogin = (username, password) => {
-    if (username === "admin" && password === "admin") {
-      localStorage.setItem("isLoggedIn", "true");
-      setIsLoggedIn(true);
-      return true;
-    }
-    return false;
-  };
-
-  const logout = () => {
-    localStorage.setItem("isLoggedIn", "false");
-    setIsLoggedIn(false);
-  }
-  
-  
   const deleteTask = (id) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
@@ -60,31 +47,19 @@ function App() {
     setTasks([...tasks, { ...task, id: randId }]);
   };
 
-
-
-  useEffect(() => {
-    localStorage.getItem("isLoggedIn") === "true"
-      ? setIsLoggedIn(true)
-      : setIsLoggedIn(false);
-  }, [isLoggedIn]);
-
-
-
-
-
   return (
     <Router>
       <div className="container">
-        <Header onSaveTask={addTask} isLoggedIn={isLoggedIn} />
+        <Header />
         <Routes>
           <Route
             exact
             path="/login"
             element={
-              isLoggedIn ? (
+              authContext.isLoggedIn ? (
                 <Navigate to="/" replace />
               ) : (
-                <Login onLogin={onLogin} />
+                <Login onLogin={authContext.login} />
               )
             }
           />
@@ -93,7 +68,7 @@ function App() {
             path="/"
             element={
               tasks.length > 0 ? (
-                <RequireAuth isLoggedIn={isLoggedIn}>
+                <RequireAuth>
                   <Tasks
                     tasks={tasks}
                     onDelete={deleteTask}
@@ -101,10 +76,7 @@ function App() {
                   />
                 </RequireAuth>
               ) : (
-                <RequireAuth isLoggedIn={isLoggedIn}>
-                  {" "}
-                  <p>No tasks to show</p>{" "}
-                </RequireAuth>
+                <RequireAuth>{<p>No tasks to show</p>}</RequireAuth>
               )
             }
           />
@@ -112,14 +84,18 @@ function App() {
             exact
             path="/add"
             element={
-              <RequireAuth isLoggedIn={isLoggedIn}>
+              <RequireAuth>
                 <AddTask onSave={addTask} />
               </RequireAuth>
             }
           />
         </Routes>
-        {isLoggedIn && (
-          <button className="btn mt" style={{ backgroundColor: "red" }} onClick={logout}>
+        {authContext.isLoggedIn && (
+          <button
+            className="btn mt"
+            style={{ backgroundColor: "red" }}
+            onClick={authContext.logout}
+          >
             Logout
           </button>
         )}

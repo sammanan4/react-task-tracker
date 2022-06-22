@@ -1,15 +1,19 @@
 import PropTypes from "prop-types";
+import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
+import AuthContext from "../context/auth-context";
 
-const Header = ({ title, onSaveTask, isLoggedIn }) => {
+const Header = ({ title }) => {
   // get current route
   const route = useLocation();
+
+  const ctx = useContext(AuthContext);
 
   return (
     <div>
       <header>
         <h2>{title}</h2>
-        {isLoggedIn && (
+        {ctx.isLoggedIn && (
           <Link
             className="btn"
             style={{
