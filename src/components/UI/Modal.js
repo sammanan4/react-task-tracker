@@ -2,7 +2,7 @@ import { PropTypes } from "prop-types";
 
 const Modal = ({ message, onClose }) => {
   return (
-      <div class="modal card">
+      <div className="modal card">
         <p>{message}</p>
         <button className="btn" style={{ backgroundColor: "red" }} onClick={onClose}>
           Close

@@ -43,7 +43,7 @@ header {
   border-left: 7px solid green;
 }
 
-input[type=text]{
+input[type=text], input[type=password]{
   padding: 0.3rem;
   margin-top: 0.3rem;
   width: 95%;
@@ -93,4 +93,10 @@ label{
   border-radius: 10px;
   padding: 1rem;
   background-color: white;
+}
+
+.disabled{
+  background-color: grey;
+  color: white;
+  cursor: auto;
 }

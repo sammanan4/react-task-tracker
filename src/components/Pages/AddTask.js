@@ -1,15 +1,31 @@
-import React, { useState, Fragment } from "react";
-import ErrorModal from "./ErrorModal";
+import React, { useState, Fragment, useEffect } from "react";
+import ErrorModal from "../ErrorModal";
+import Button from "../UI/Button";
 
 const AddTask = ({ onSave }) => {
   const [title, setTitle] = useState("");
   const [day, setDay] = useState("");
   const [reminder, setReminder] = useState(false);
+  const [canSave, setCanSave] = useState();
 
   const [error, setError] = useState({
     message: "",
     isError: false,
   });
+
+  useEffect(() => {
+    const timerIdentifier = setTimeout(() => {
+      if (title.length > 0 && day.length > 0) {
+        setCanSave(true);
+      } else {
+        setCanSave(false);
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(timerIdentifier);
+    }
+  }, [title, day]);
 
   const onModalClose = () => {
     setError({ ...error, isError: false });
@@ -17,9 +33,9 @@ const AddTask = ({ onSave }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (title.length === 0) {
+    if (title.length === 0 || day.length === 0) {
       setError({
-        message: "Title is required",
+        message: "Title and Day are required",
         isError: true,
       });
       return;
@@ -68,7 +84,7 @@ const AddTask = ({ onSave }) => {
         />
         <br />
 
-        <button className="btn w-100 mt">Save</button>
+        <Button title="Save" isDisabled={!canSave} />
       </form>
     </Fragment>
   );
