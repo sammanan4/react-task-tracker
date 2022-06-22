@@ -1,8 +1,30 @@
-import { Fragment, useState } from "react";
+import { Fragment, useReducer, useState } from "react";
 import ErrorModal from "../ErrorModal";
 
+
+
+const usernameReducer = (state, action) => {
+    if(action.type === "USER_INPUT"){
+        return {
+            value: action.value,
+            isValid: action.value.length >= 5
+        }
+    }
+    return {
+        value: state.value,
+        isValid: state.isValid
+    }
+}
+
+
 const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState("");
+    
+    const [usernameState, dispatchUsername] = useReducer(usernameReducer, {
+        value: "",
+        isValid: false
+    });
+
+//   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState({
     message: "",
@@ -10,30 +32,38 @@ const Login = ({ onLogin }) => {
   });
 
   const onUsernameChange = (e) => {
-    setUsername(e.target.value);
+    dispatchUsername({
+        type: "USER_INPUT",
+        value: e.target.value
+    })
   };
+
   const onPasswordChange = (e) => {
     setPassword(e.target.value);
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (username.length === 0 || password.length === 0) {
+    if(!usernameState.isValid){
+        setError({
+            message: "Username must be atleast 5 characters",
+            isError: true,
+            });
+            return;  
+    }
+    if (password.length === 0) {
       setError({
-        message: "Username and password cannot be empty",
+        message: "password cannot be empty",
         isError: true,
       });
       return;
     }
-    const success = onLogin(username, password);
+    const success = onLogin(usernameState.value, password);
     if(!success)
         setError({
             message: "Invalid username or password",
             isError: true,
         });
-
-    setUsername("");
-    setPassword("");
   };
 
   const onModalClose = () => {
@@ -46,7 +76,7 @@ const Login = ({ onLogin }) => {
         <ErrorModal message={error.message} onClose={onModalClose} />
       )}
       <form onSubmit={onSubmit} className="px">
-        <label htmlFor="username" value={username}>
+        <label htmlFor="username" value={usernameState.value}>
           Username
         </label>
         <br />
