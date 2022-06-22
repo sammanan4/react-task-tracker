@@ -8,11 +8,11 @@ const ErrorModal = ({ message, onClose }) => {
     <>
       {ReactDOM.createPortal(
         <Backdrop />,
-        document.getElementById("backdrop-area")
+        document.getElementById("backdrop-root")
       )}
       {ReactDOM.createPortal(
         <Modal message={message} onClose={onClose} />,
-        document.getElementById("modal-area")
+        document.getElementById("modal-root")
       )}
     </>
   );
