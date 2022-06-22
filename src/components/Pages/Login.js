@@ -1,30 +1,29 @@
-import { Fragment, useReducer, useState } from "react";
+import { Fragment, useContext, useReducer, useState } from "react";
+import AuthContext from "../../context/auth-context";
 import ErrorModal from "../ErrorModal";
 
-
-
 const usernameReducer = (state, action) => {
-    if(action.type === "USER_INPUT"){
-        return {
-            value: action.value,
-            isValid: action.value.length >= 5
-        }
-    }
+  if (action.type === "USER_INPUT") {
     return {
-        value: state.value,
-        isValid: state.isValid
-    }
-}
+      value: action.value,
+      isValid: action.value.length >= 5,
+    };
+  }
+  return {
+    value: state.value,
+    isValid: state.isValid,
+  };
+};
 
+const Login = () => {
+  const authContext = useContext(AuthContext);
 
-const Login = ({ onLogin }) => {
-    
-    const [usernameState, dispatchUsername] = useReducer(usernameReducer, {
-        value: "",
-        isValid: false
-    });
+  const [usernameState, dispatchUsername] = useReducer(usernameReducer, {
+    value: "",
+    isValid: false,
+  });
 
-//   const [username, setUsername] = useState("");
+  //   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState({
     message: "",
@@ -33,9 +32,9 @@ const Login = ({ onLogin }) => {
 
   const onUsernameChange = (e) => {
     dispatchUsername({
-        type: "USER_INPUT",
-        value: e.target.value
-    })
+      type: "USER_INPUT",
+      value: e.target.value,
+    });
   };
 
   const onPasswordChange = (e) => {
@@ -44,12 +43,12 @@ const Login = ({ onLogin }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if(!usernameState.isValid){
-        setError({
-            message: "Username must be atleast 5 characters",
-            isError: true,
-            });
-            return;  
+    if (!usernameState.isValid) {
+      setError({
+        message: "Username must be atleast 5 characters",
+        isError: true,
+      });
+      return;
     }
     if (password.length === 0) {
       setError({
@@ -58,12 +57,12 @@ const Login = ({ onLogin }) => {
       });
       return;
     }
-    const success = onLogin(usernameState.value, password);
-    if(!success)
-        setError({
-            message: "Invalid username or password",
-            isError: true,
-        });
+    const success = authContext.login(usernameState.value, password);
+    if (!success)
+      setError({
+        message: "Invalid username or password",
+        isError: true,
+      });
   };
 
   const onModalClose = () => {

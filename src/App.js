@@ -59,7 +59,7 @@ function App() {
               authContext.isLoggedIn ? (
                 <Navigate to="/" replace />
               ) : (
-                <Login onLogin={authContext.login} />
+                <Login />
               )
             }
           />
